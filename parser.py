@@ -3,10 +3,9 @@ import csv, urllib2
 
 url = 'http://www.sbe.virginia.gov/sbe_csv/CF/Report.csv'
 
-# Retrieve the contents of the CSV report file from the SBE's server. Because they use \r\n newlines,
-# it's necessary to replace all of the newlines with \r (or \n would be fine, too.)
+# Retrieve the contents of the CSV report file from the SBE's server.
 # If this fails, throw an error and quit.
-csv_file = urllib2.urlopen(url).read().replace('\r\n', '\r')
+csv_file = urllib2.urlopen(url)
 
 # Convert the contents of the CSV file to a list.
 # If this fails, throw an error and quit.
@@ -15,10 +14,12 @@ Report = csv.reader(csv_file)
 # Iterate through each line in the report.
 for row in Report:
 
+	# If this is the first row, store its length.
 	# Ignore the header row, though count how many values it has.
 	total_columns = len(row)
 	
 	# Throw an error for any row that has fewer values than the header row.
+	
 	
 	# Make modifications to all fields that require normalization
 	print ', '.join(row)
