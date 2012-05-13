@@ -1,7 +1,10 @@
 # Import needed libraries.
-import csv, urllib2
+import csv, urllib2, re, time
 
-url = 'http://www.sbe.virginia.gov/sbe_csv/CF/Report.csv'
+# This will only work for the month of April. Because there's no single URL for the report, it's
+# going to be necessary to either iterate through all directories or get the most recent one. Until
+# the SBE documents or explains what they're doing here, it's tough to know what do with this.
+url = 'http://www.sbe.virginia.gov/sbe_csv/CF/2012_04/Report.csv'
 
 # Retrieve the contents of the CSV report file from the SBE's server.
 # If this fails, throw an error and quit.
@@ -12,17 +15,34 @@ csv_file = urllib2.urlopen(url)
 Report = csv.reader(csv_file)
 
 # Iterate through each line in the report.
-for row in Report:
+for counter, row in enumerate(Report):
 
-	# If this is the first row, store its length.
-	# Ignore the header row, though count how many values it has.
-	total_columns = len(row)
-	
+	if counter == 0:
+		# Save the header row as our column names.
+		column_names = row
+		continue
+		
 	# Throw an error for any row that has fewer values than the header row.
-	
-	
-	# Make modifications to all fields that require normalization
-	print ', '.join(row)
+	elif len(row) < len(column_names):
+		#exception 'Ignoring the following row because it has fewer values than the header row.'
+		print ', '.join(row)
+
+	else:
+		# Make modifications to all fields that require normalization
+		row = dict(zip(column_names, row))
+		
+		# Normalize phone number formatting by removing everything non-numeric and then applying
+		# a standard hyphenation mask.
+		row['SubmitterPhone'] = re.sub('[^0-9]','', row['SubmitterPhone'])
+		row['SubmitterPhone'] = row['SubmitterPhone'][:3] + '-' + row['SubmitterPhone'][3:6] + '-' + row['SubmitterPhone'][6:]
+		
+		# The ElectionCycle field is frequently empty. (Which doesn't make sense, intuitively, but
+		# there it is.) When it is populated, it's in MM/YYYY format, unlike all other dates in the
+		# file. Modify the format to be YYYY-MM-01 based.
+		if len(row['ElectionCycle']) > 0:
+			row['ElectionCycle'] = time.strftime('%Y-%m-%d', time.strptime(row['ElectionCycle'], '%m/%Y'))
+		
+		print (row)
 
 
 # Convert list back to a CSV file and write to the filesystem.
@@ -35,7 +55,7 @@ for row in Report:
 Mapping of field values to SQL column.
 
 ReportId					mediumint unsigned
-AccountId					38 (ignore brackets?)
+AccountId					38
 CommitteeCode				varchar (12)
 CommitteeName				varchar (not null)
 CommitteeType				enum (create list based on distinct values)
