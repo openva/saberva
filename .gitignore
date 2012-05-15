@@ -29,3 +29,7 @@ pip-log.txt
 .DS_Store
 
 report.csv
+
+import.sql
+
+import.csv
