@@ -52,9 +52,10 @@ for counter, row in enumerate(Report):
 		if len(row['ElectionCycle']) > 0:
 			row['ElectionCycle'] = time.strftime('%Y-%m-%d', time.strptime(row['ElectionCycle'], '%m/%Y'))
 		
-		# Commented out because it's not working.
-		#wr.writerow(row)
 		# Convert every False to "n" and every True to "y"
+		
+		# Write this row to our CSV file.
+		wr.writerow(row.values())
 
 # Create a SQL file that will create the table(s) and load the CSV from file.
 sql_file = open(sql_filename, 'wb')
