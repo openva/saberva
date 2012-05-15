@@ -54,6 +54,7 @@ for counter, row in enumerate(Report):
 		
 		# Commented out because it's not working.
 		#wr.writerow(row)
+		# Convert every False to "n" and every True to "y"
 
 # Create a SQL file that will create the table(s) and load the CSV from file.
 sql_file = open(sql_filename, 'wb')
