@@ -10,7 +10,7 @@ sql_filename = 'import.sql'
 # This will only work for the month of April. Because there's no single URL for the report, it's
 # going to be necessary to either iterate through all directories or get the most recent one. Until
 # the SBE documents or explains what they're doing here, it's tough to know what do with this.
-url = 'http://www.sbe.virginia.gov/sbe_csv/CF/2012_04/Report.csv'
+url = 'http://www.sbe.virginia.gov/sbe_csv/CF/2012_09/Report.csv'
 
 # Retrieve the contents of the CSV report file from the SBE's server.
 # If this fails, throw an error and quit.
@@ -47,10 +47,14 @@ for counter, row in enumerate(Report):
 		row['SubmitterPhone'] = row['SubmitterPhone'][:3] + '-' + row['SubmitterPhone'][3:6] + '-' + row['SubmitterPhone'][6:]
 		
 		# The ElectionCycle field is frequently empty. (Which doesn't make sense, intuitively, but
-		# there it is.) When it is populated, it's in MM/YYYY format, unlike all other dates in the
-		# file. Modify the format to be YYYY-MM-01 based.
+		# there it is.) When it is populated, it's sometimes in a MM/YYYY format (unlike all other
+		# dates in the file) and sometimes a MM/DD/YYYY format. Modify either format to be
+		# YYYY-MM-DD based.
 		if len(row['ElectionCycle']) > 0:
-			row['ElectionCycle'] = time.strftime('%Y-%m-%d', time.strptime(row['ElectionCycle'], '%m/%Y'))
+			if len(row['ElectionCycle']) < 8:
+				row['ElectionCycle'] = time.strftime('%Y-%m-%d', time.strptime(row['ElectionCycle'], '%m/%Y'))
+			else:
+				row['ElectionCycle'] = time.strftime('%Y-%m-%d', time.strptime(row['ElectionCycle'], '%m/%d/%Y'))
 		
 		# Write this row to our CSV file.
 		wr.writerow(row.values())
