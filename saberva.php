@@ -238,7 +238,6 @@ $parser = new SaberVA;
  * consuming process, involving scraping north of 1,200 pages, so we don't want to do this unless we
  * have to.)
  */
-$page = $parser->fetch_page(1);
 if (!file_exists($output_dir . 'committees.json'))
 {
 
@@ -393,6 +392,11 @@ foreach ($committees AS $committee)
 		file_put_contents($filename, $parser->report_json);
 		
 		echo $committee->CommitteeName . ': Report ' . $report->Id . PHP_EOL;
+		
+	}
+	
+}
+
 
 /**
  * Create a CSV file to provide basic data about each committee.
