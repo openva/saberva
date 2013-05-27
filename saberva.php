@@ -363,7 +363,52 @@ foreach ($committees AS $committee)
 		file_put_contents($filename, $parser->report_json);
 		
 		echo $committee->CommitteeName . ': Report ' . $report->mId . PHP_EOL;
+
+/**
+ * Create a CSV file to provide basic data about each committee.
+ */
+ 
+/*
+ * Define the location of our output file.
+ */
+$fp = fopen($output_dir . 'committees.csv', 'w');
+if ($fp === FALSE)
+{
+	echo 'Could not create committees.csv file to store committee metadata' . PHP_EOL;
+}
+
+else
+{
+	
+	echo 'Stored metadata about each committee in committees.csv' . PHP_EOL;
+	
+	/*
+	 * Create our CSV column headers.
+	 */
+	$csv = array('Code', 'Name', 'Candidate', 'Type', 'Balance', 'Date');
+	fputcsv($fp, $csv);
+	unset($csv);
+	
+	/*
+	 * Iterate through all of the committees to generate and write a line of CSV for each of them.
+	 */
+	$csv = array();
+	foreach ($committees as $committee)
+	{
+		$csv['code'] = $committee->CommitteeCode;
+		$csv['name'] = $committee->CommitteeName;
+		$csv['candidate'] = $committee->CandidateName;
+		$csv['type'] = $committee->CommitteeType;
+		$csv['balance'] = $committee->Reports->{0}->EndingBalance;
+		$csv['date'] = $committee->Reports->{0}->PeriodEnd;
+		
+		fputcsv($fp, $csv);
+		
+		unset($csv);
 		
 	}
 	
+	/*
+	 * Close our CSV file handle.
+	 */
 }
