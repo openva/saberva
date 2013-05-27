@@ -411,4 +411,5 @@ else
 	/*
 	 * Close our CSV file handle.
 	 */
+	fclose($fp);
 }
