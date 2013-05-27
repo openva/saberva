@@ -342,7 +342,7 @@ foreach ($committees AS $committee)
 		$xml = file_get_contents($report->XmlUrl);
 		if ($xml === FALSE)
 		{
-			echo $committee->CommitteeName . ': Report ' . $report->report_Id . ' could not be retrieved' . PHP_EOL;
+			echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
 			continue;
 		}
 		
@@ -353,7 +353,7 @@ foreach ($committees AS $committee)
 		$result = $parser->xml_to_json();
 		if ($result === FALSE)
 		{
-			echo $committee->CommitteeName . ': Report ' . $report->report_Id . ' skipped; invalid XML' . PHP_EOL;
+			echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
 			continue;
 		}
 		
@@ -362,7 +362,7 @@ foreach ($committees AS $committee)
 		 */
 		file_put_contents($filename, $parser->report_json);
 		
-		echo $committee->CommitteeName . ': Report ' . $report->mId . PHP_EOL;
+		echo $committee->CommitteeName . ': Report ' . $report->Id . PHP_EOL;
 
 /**
  * Create a CSV file to provide basic data about each committee.
