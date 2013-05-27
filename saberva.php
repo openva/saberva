@@ -234,85 +234,115 @@ curl_setopt($ch, CURLOPT_POST, 1);
 $parser = new SaberVA;
 
 /*
- * Fetch the first page, simply to determine how many pages to retreive.
+ * If we don't already have a saved copy of the committee data, then fetch it anew. (This is a time-
+ * consuming process, involving scraping north of 1,200 pages, so we don't want to do this unless we
+ * have to.)
  */
 $page = $parser->fetch_page(1);
-if ($page === FALSE)
-{
-	die('Could not retrieve first page.');
-}
-$page = json_decode($page);
-$last_page = ceil($page->RecordCount  / $page->PageSize);
-
-echo 'Iterating through '.$page->RecordCount . ' records.' . PHP_EOL;
-
-/*
- * Create a new, empty object to store all of this committee data.
- */
-$committees = new stdClass();
-
-/*
- * Iterate through every page of records.
- */
-$j=0;
-for ($i=1; $i<=$last_page; $i++)
+if (!file_exists($output_dir . 'committees.json'))
 {
 
 	/*
-	 * Retrieve a page of records. (Containing 10 committee records, at this writing.)
+	 * Fetch the first page, simply to determine how many pages to retreive.
 	 */
-	$page = $parser->fetch_page($i);
+	$page = $parser->fetch_page(1);
 	if ($page === FALSE)
 	{
-		break;
+		die('Could not retrieve first page.');
 	}
 	$page = json_decode($page);
-
+	$last_page = ceil($page->RecordCount  / $page->PageSize);
+	
+	echo 'Iterating through '.$page->RecordCount . ' records.' . PHP_EOL;
+	
 	/*
-	 * Iterate through each of the 10 committees on this page.
+	 * Create a new, empty object to store all of this committee data.
 	 */
-	foreach ($page->Committees as $committee)
+	$committees = new stdClass();
+	
+	/*
+	 * Iterate through every page of records.
+	 */
+	$j=0;
+	for ($i=1; $i<=$last_page; $i++)
 	{
+	
 		/*
-		 * Add the committee data to our $committees object.
+		 * Retrieve a page of records. (Containing 10 committee records, at this writing.)
 		 */
-		$committees->$j = $committee;
+		$page = $parser->fetch_page($i);
+		if ($page === FALSE)
+		{
+			break;
+		}
+		$page = json_decode($page);
+	
+		/*
+		 * Iterate through each of the 10 committees on this page.
+		 */
+		foreach ($page->Committees as $committee)
+		{
+			/*
+			 * Add the committee data to our $committees object.
+			 */
+			$committees->$j = $committee;
+			
+			/*
+			 * Retrieve all of the reports for this committee.
+			 */
+			$parser->committee_id = $committee->AccountId;
+			$result = $parser->fetch_reports();
+			if ($result !== FALSE)
+			{
+				$committees->$j->Reports = $parser->reports;
+				echo $committee->CommitteeName . PHP_EOL;
+			}
+			else
+			{
+				echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
+			}
+			
+			/*
+			 * Iterate our committee counter.
+			 */
+			$j++;
+			
+		}
 		
 		/*
-		 * Retrieve all of the reports for this committee.
+		 * Don't flood the SBE's server -- only issue one request per second. (Of course, each request
+		 * is spawning ten child requests, one for each row in the list of committes, so this isn't as
+		 * conservative as it sounds.)
 		 */
-		$parser->committee_id = $committee->AccountId;
-		$result = $parser->fetch_reports();
-		if ($result !== FALSE)
-		{
-			$committees->$j->Reports = $parser->reports;
-			echo $committee->CommitteeName . PHP_EOL;
-		}
-		else
-		{
-			echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
-		}
-		
-		/*
-		 * Iterate our committee counter.
-		 */
-		$j++;
+		sleep(1);
 		
 	}
 	
 	/*
-	 * Don't flood the SBE's server -- only issue one request per second. (Of course, each request
-	 * is spawning ten child requests, one for each row in the list of committes, so this isn't as
-	 * conservative as it sounds.)
+	 * Save the listing of all of the committees to a JSON file.
 	 */
-	sleep(1);
-	
+	file_put_contents($output_dir . 'committees.json', json_encode($committees));
 }
 
 /*
- * Save the listing of all of the committees to a JSON file.
+ * If we have a copy of the committee data at committees.json already, then pull the data out of
+ * there, instead.
  */
-file_put_contents($output_dir . 'committees.json', json_encode($committees));
+else
+{
+	$committees = file_get_contents($output_dir . 'committees.json');
+	if ($committees === FALSE)
+	{
+		die('Fatal error: Could not get committee data from committees.json.' . PHP_EOL);
+	}
+	
+	$committees = json_decode($committees);
+	if ($committees === FALSE)
+	{
+		die('Fatal error: Committee data cached in committees.json is comprised of invalid JSON.'
+			. PHP_EOL);
+	}
+}
 
 /*
  * Iterate through the list of the committees to retrieve their XML and store that XML as JSON.
