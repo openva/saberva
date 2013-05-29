@@ -409,7 +409,7 @@ foreach ($committees AS $committee)
 		 */
 		file_put_contents($filename, $parser->report_json);
 		
-		echo $committee->CommitteeName . ': Report ' . $report->Id . PHP_EOL;
+		echo $committee->CommitteeName . ': Report ' . $report->Id . ' saved to ' . $filename . PHP_EOL;
 		
 	}
 	
