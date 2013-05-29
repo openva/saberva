@@ -19,7 +19,7 @@ include('simple_html_dom.php');
 /*
  * Specify the name of the directory in which we'll store the resulting reports.
  */
-$output_dir = 'reports/';
+$reports_dir = 'report/';
 
 /*
  * Specify the name of the directory in which we'll store the committee JSON files.
@@ -373,7 +373,7 @@ foreach ($committees AS $committee)
 		/*
 		 * Define the path of the file that will store this report's JSON.
 		 */
-		$filename = $output_dir . $report->Id . '.json';
+		$filename = $reports_dir . $report->Id . '.json';
 		
 		/*
 		 * If we already have a copy of this file, don't retrieve it again.
