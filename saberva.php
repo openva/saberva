@@ -21,6 +21,11 @@ include('simple_html_dom.php');
  */
 $output_dir = 'reports/';
 
+/*
+ * Specify the name of the directory in which we'll store the committee JSON files.
+ */
+$committees_dir = 'committee/';
+
 
 /**
  * 
@@ -348,6 +353,19 @@ else
  */
 foreach ($committees AS $committee)
 {
+	
+	/*
+	 * Define the path of the file that will store this committee's JSON.
+	 */
+	$filename = $committees_dir . $committee->CommitteeCode . '.json';
+	
+	/*
+	 * Save the JSON for this committee.
+	 */
+	file_put_contents($filename, json_encode($committee));
+	
+	echo $committee->CommitteeName . ': ' . $committee->CommitteeCode . ' saved to ' . $filename . PHP_EOL;
+	
 
 	foreach ($committee->Reports as $report)
 	{
