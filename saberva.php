@@ -238,7 +238,7 @@ $parser = new SaberVA;
  * consuming process, involving scraping north of 1,200 pages, so we don't want to do this unless we
  * have to.)
  */
-if (!file_exists($output_dir . 'committees.json'))
+if (!file_exists('committees.json'))
 {
 
 	/*
@@ -320,7 +320,7 @@ if (!file_exists($output_dir . 'committees.json'))
 	/*
 	 * Save the listing of all of the committees to a JSON file.
 	 */
-	file_put_contents($output_dir . 'committees.json', json_encode($committees));
+	file_put_contents('committees.json', json_encode($committees));
 }
 
 /*
@@ -329,7 +329,7 @@ if (!file_exists($output_dir . 'committees.json'))
  */
 else
 {
-	$committees = file_get_contents($output_dir . 'committees.json');
+	$committees = file_get_contents('committees.json');
 	if ($committees === FALSE)
 	{
 		die('Fatal error: Could not get committee data from committees.json.' . PHP_EOL);
@@ -405,7 +405,7 @@ foreach ($committees AS $committee)
 /*
  * Define the location of our output file.
  */
-$fp = fopen($output_dir . 'committees.csv', 'w');
+$fp = fopen('committees.csv', 'w');
 if ($fp === FALSE)
 {
 	echo 'Could not create committees.csv file to store committee metadata' . PHP_EOL;
@@ -446,4 +446,5 @@ else
 	 * Close our CSV file handle.
 	 */
 	fclose($fp);
+	
 }
