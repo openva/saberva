@@ -17,7 +17,7 @@ date_default_timezone_set("America/New_York");
 include('simple_html_dom.php');
 
 /*
- * Specify the name of the directory in which we'll store the resulting reports.
+ * Specify the name of the directory in which we'll store the report JSON files.
  */
 $reports_dir = 'report/';
 
