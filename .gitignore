@@ -28,10 +28,7 @@ pip-log.txt
 
 .DS_Store
 
-report.csv
-
-import.sql
-
-import.csv
-
-reports/
+report/
+committee/
+committees.csv
+committees.json
