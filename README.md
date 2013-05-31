@@ -15,5 +15,9 @@ Run at the command line: `php saberva.php`. It will retrieve a list of every cam
 * committee/*.json
 * report/*.json
 
+## Data source update schedule
+
+All of the information is pulled from [the Virginia State Board of Elections’ Campaign Finance Reports site](http://cfreports.sbe.virginia.gov/). Their site's data is updated once daily, at 5 PM EST. Although amendments can be filed on any day of the month, major changes occur as per the filing schedule ([e.g., the 2013 candidate committees](http://www.sbe.virginia.gov/Files/Forms/CampaignFinance/2013%20Candidate%20Reporting%20Deadlines.pdf)). There is no benefit to running this more than once per day, and for most purposes, it will only need to be run a few times a year (e.g., July 15 and January 15, for elected officials not on the ballot that November).
+
 ## LICENSE
 Released under the MIT License.
