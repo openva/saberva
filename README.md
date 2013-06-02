@@ -8,6 +8,8 @@ The name, "Saberva," combines "State Board of Elections" and "Virginia" in a sin
 
 Run at the command line: `php saberva.php`. It will retrieve a list of every campaign committee that has filed a report since January 1, 2012, and then retrieve a list of every report filed by that committee. The result is a large JSON file (several megabytes). It then iterates through that list of committees, creates a JSON file for each committee, retrieves every cited report, converts that report to JSON, and stores each report as a JSON file. (This produces thousands of JSON files.)
 
+The master committee list, `committees.json`, will not be refreshed unless it's deleted, or unless `reload` is passed as a command-line argument (e.g., `php saberva.php reload`).
+
 ## Resulting files
 
 * committees.json

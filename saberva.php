@@ -267,11 +267,23 @@ curl_setopt($ch, CURLOPT_POST, 1);
 $parser = new SaberVA;
 
 /*
+ * Get any command-line arguments.
+ */
+$options = array();
+if ( isset($argv) && (count($argv) > 1) )
+{
+	if ($argv[1] == 'reload')
+	{
+		$options['reload'] = TRUE;
+	}
+}
+
+/*
  * If we don't already have a saved copy of the committee data, then fetch it anew. (This is a time-
  * consuming process, involving scraping north of 1,200 pages, so we don't want to do this unless we
  * have to.)
  */
-if (!file_exists('committees.json'))
+if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 {
 
 	/*
