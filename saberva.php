@@ -86,12 +86,17 @@ class SaberVA
 		/*
 		 * Establish the URL at which the list is found.
 		 */
-		$url = 'http://cfreports.sbe.virginia.gov/Committee/Index/' . $this->committee_id;
+		$this->url = 'http://cfreports.sbe.virginia.gov/Committee/Index/' . $this->committee_id;
 		
 		/*
-		 * Retrieve the HTML.
+		 * Retrieve the HTML from $this->url.
 		 */
-		$html = file_get_html($url);
+		$html = $this->fetch_html();
+		 
+		/*
+		 * Run the HTML through Simple HTML Dom.
+		 */
+		$html = str_get_html($html);
 		if ($html === FALSE)
 		{
 			echo curl_error($ch2) . PHP_EOL;
@@ -214,6 +219,29 @@ class SaberVA
 		}
 		
 		return TRUE;
+		
+	}
+	
+	
+	/**
+	 * Retrieve the HTML for a given URL.
+	 */
+	function fetch_html()
+	{
+		
+		if (!isset($this->url))
+		{
+			return FALSE;
+		}
+		
+		$curl = curl_init(); 
+		curl_setopt($curl, CURLOPT_URL, $this->url);  
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);  
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);  
+		$html = curl_exec($curl);
+		curl_close($curl);
+		
+		return $html;
 		
 	}
 	
