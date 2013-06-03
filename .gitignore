@@ -32,3 +32,7 @@ report/
 committee/
 committees.csv
 committees.json
+contributions.csv
+expenses.csv
+contributions/
+expenses/
