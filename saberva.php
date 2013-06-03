@@ -389,6 +389,18 @@ else
 }
 
 /*
+ * Remove these files and directories, since we're about to recreate them. (We append to these files
+ * in a loop. If we don't delete them here, these files will simply get longer every time that we
+ * run this.)
+ */
+unlink('contributions.csv');
+unlink('expenses.csv');
+rmdir('expenses');
+rmdir('contributions');
+mkdir('expenses');
+mkdir('contributions');
+
+/*
  * Iterate through the list of the committees to retrieve their XML and store that XML as JSON.
  */
 foreach ($committees AS $committee)
@@ -418,38 +430,137 @@ foreach ($committees AS $committee)
 		/*
 		 * If we already have a copy of this file, don't retrieve it again.
 		 */
-		if (file_exists($filename) === TRUE)
+		if (file_exists($filename) === FALSE)
 		{
-			continue;
+		
+			/*
+			 * Save the remote XML to a string.
+			 */
+			$parser->url = $report->XmlUrl;
+			$xml = $parser->fetch_html();
+			if ($xml === FALSE)
+			{
+				echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
+				continue;
+			}
+			
+			/*
+			 * Convert this XML to JSON.
+			 */
+			$parser->xml = $xml;
+			$result = $parser->xml_to_json();
+			if ($result === FALSE)
+			{
+				echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
+				continue;
+			}
+					
+			/*
+			 * Save a copy of the JSON to a file.
+			 */
+			file_put_contents($filename, $parser->report_json);
+			
+			/*
+			 * Save this variable to be used later.
+			 */
+			$json = $parser->report_json;
+			
 		}
 		
 		/*
-		 * Save the remote XML to a string.
+		 * If we already have a copy of this file, then simply reopen it.
 		 */
-		$xml = file_get_contents($report->XmlUrl);
-		if ($xml === FALSE)
+		else
 		{
-			echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
-			continue;
+			$json = file_get_contents($filename);
 		}
 		
 		/*
-		 * Convert this XML to JSON.
+		 * Save the report's contributions and expenses to their own objects.
 		 */
-		$parser->xml = $xml;
-		$result = $parser->xml_to_json();
-		if ($result === FALSE)
+		$tmp = json_decode($json);
+		$contributions = $tmp->ScheduleA->LiA;
+		$expenses = $tmp->ScheduleD->LiD;
+		unset($tmp);
+
+		/*
+		 * Iterate through every individual contribution and and save it to a pair of CSV files.
+		 */
+		$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'a');
+		$fp_all = fopen('contributions.csv', 'a');
+		if (count($contributions) > 0)
 		{
-			echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
-			continue;
+			foreach ($contributions as $contribution)
+			{
+			
+				$record = array
+					(
+						'committee_code' => $committee->CommitteeCode,
+						'report_id' => $report->Id,
+						//'individual' => $contribution->Contributor->@attributes->IsIndividual,
+						'prefix' => $contribution->Contributor->Prefix,
+						'name_first' => $contribution->Contributor->FirstName,
+						'name_middle' => $contribution->Contributor->MiddleName,
+						'name_last' => $contribution->Contributor->LastName,
+						'address_1' => $contribution->Contributor->Address->Line1,
+						'address_2' => $contribution->Contributor->Address->Line2,
+						'address_city' => $contribution->Contributor->Address->City,
+						'address_state' => $contribution->Contributor->Address->State,
+						'address_zip' => $contribution->Contributor->Address->ZipCode,
+						'employer' => $contribution->Contributor->NameOfEmployer,
+						'occupation' => $contribution->Contributor->OccupationOrTypeOfBusiness,
+						'employment_place' => $contribution->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness,
+						'date' => $contribution->TransactionDate,
+						'amount' => $contribution->Amount,
+						'cumulative_amount' => $contribution->TotalToDate
+					);
+				
+				fputcsv($fp_committee, $record);
+				fputcsv($fp_all, $record);
+				
+			}
+		}
+		fclose($fp_committee);
+		fclose($fp_all);
+
+		/*
+		 * Iterate through every individual expenses and and save it to a pair of CSV files.
+		 */
+		$fp_committee = fopen('expenses/' . $committee->CommitteeCode . '.csv', 'a');
+		$fp_all = fopen('expenses.csv', 'a');
+		if (count($expenses) > 0)
+		{
+			foreach($expenses as $expense)
+			{
+
+				$record = array
+					(
+						'committee_code' => $committee->CommitteeCode,
+						'report_id' => $report->Id,
+						//'individual' => $expense->Payee->@attributes->IsIndividual,
+						'prefix' => $expense->Payee->Prefix,
+						'name_first' => $expense->Payee->FirstName,
+						'name_middle' => $expense->Payee->MiddleName,
+						'name_last' => $expense->Payee->LastName,
+						'address_1' => $expense->Payee->Address->Line1,
+						'address_2' => $expense->Payee->Address->Line2,
+						'address_city' => $expense->Payee->Address->City,
+						'address_state' => $expense->Payee->Address->State,
+						'address_zip' => $expense->Payee->Address->ZipCode,
+						'date' => $expense->TransactionDate,
+						'amount' => $expense->Amount,
+						'authorized_by' => $expense->AuthorizingName,
+						'purchased' => $expense->ItemOrService
+					);
+				
+				fputcsv($fp_committee, $record);
+				fputcsv($fp_all, $record);
+				
+			}
 		}
 		
-		/*
-		 * Save a copy of the JSON to a file.
-		 */
-		file_put_contents($filename, $parser->report_json);
-		
-		echo $committee->CommitteeName . ': Report ' . $report->Id . ' saved to ' . $filename . PHP_EOL;
+		fclose($fp_committee);
+		fclose($fp_all);
 		
 	}
 	
