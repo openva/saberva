@@ -354,9 +354,9 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 		}
 		
 		/*
-		 * Don't flood the SBE's server -- only issue one request per second. (Of course, each request
-		 * is spawning ten child requests, one for each row in the list of committes, so this isn't as
-		 * conservative as it sounds.)
+		 * Don't flood the SBE's server -- only issue one request per second. (Of course, each
+		 * request is spawning ten child requests, one for each row in the list of committes, so
+		 * this isn't as conservative as it sounds.)
 		 */
 		sleep(1);
 		
@@ -389,9 +389,8 @@ else
 }
 
 /*
- * Remove these files and directories, since we're about to recreate them. (We append to these files
- * in a loop. If we don't delete them here, these files will simply get longer every time that we
- * run this.)
+ * Remove these files, since we're about to recreate them. (We append to these files in a loop. If
+ * we don't delete them here, these files will simply get longer every time that we run this.)
  */
 unlink('contributions.csv');
 unlink('expenses.csv');
