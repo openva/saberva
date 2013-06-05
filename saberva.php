@@ -19,12 +19,12 @@ include('simple_html_dom.php');
 /*
  * Specify the name of the directory in which we'll store the report JSON files.
  */
-$reports_dir = 'report/';
+$reports_dir = 'reports/';
 
 /*
  * Specify the name of the directory in which we'll store the committee JSON files.
  */
-$committees_dir = 'committee/';
+$committees_dir = 'committees/';
 
 
 /**
