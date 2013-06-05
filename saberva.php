@@ -485,6 +485,12 @@ foreach ($committees AS $committee)
 		$fp_all = fopen('contributions.csv', 'a');
 		if (count($contributions) > 0)
 		{
+			$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
+				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
+				'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
+				'date', 'amount', 'cumulative_amount');
+			fputcsv($fp_committee, $headers);
+			
 			foreach ($contributions as $contribution)
 			{
 			
@@ -525,6 +531,11 @@ foreach ($committees AS $committee)
 		$fp_all = fopen('expenses.csv', 'a');
 		if (count($expenses) > 0)
 		{
+			$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
+				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
+				'address_state', 'address_zip', 'date', 'amount', 'authorized_by', 'purchased');
+			fputcsv($fp_committee, $headers);
+			
 			foreach($expenses as $expense)
 			{
 
