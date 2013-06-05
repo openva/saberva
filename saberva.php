@@ -491,6 +491,11 @@ foreach ($committees AS $committee)
 				'date', 'amount', 'cumulative_amount');
 			fputcsv($fp_committee, $headers);
 			
+			/*
+			 * Create an array to store this data as JSON, in addition to CSV.
+			 */
+			$json = array();
+			
 			foreach ($contributions as $contribution)
 			{
 			
@@ -515,15 +520,26 @@ foreach ($committees AS $committee)
 						'amount' => $contribution->Amount,
 						'cumulative_amount' => $contribution->TotalToDate
 					);
-				
+					
 				fputcsv($fp_committee, $record);
 				fputcsv($fp_all, $record);
+				
+				/*
+				 * Append this record to our JSON array.
+				 */
+				$json[] = $record;
 				
 			}
 		}
 		fclose($fp_committee);
 		fclose($fp_all);
-
+		
+		/*
+		 * Turn the JSON array into actual JSON.
+		 */
+		$json = json_encode($json);
+		file_put_contents('contributions/' . $committee->CommitteeCode . '.json', $json);
+		
 		/*
 		 * Iterate through every individual expenses and and save it to a pair of CSV files.
 		 */
@@ -535,6 +551,11 @@ foreach ($committees AS $committee)
 				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
 				'address_state', 'address_zip', 'date', 'amount', 'authorized_by', 'purchased');
 			fputcsv($fp_committee, $headers);
+			
+			/*
+			 * Create an array to store this data as JSON, in addition to CSV.
+			 */
+			$json = array();
 			
 			foreach($expenses as $expense)
 			{
@@ -562,11 +583,22 @@ foreach ($committees AS $committee)
 				fputcsv($fp_committee, $record);
 				fputcsv($fp_all, $record);
 				
+				/*
+				 * Append this record to our JSON array.
+				 */
+				$json[] = $record;
+				
 			}
 		}
 		
 		fclose($fp_committee);
 		fclose($fp_all);
+		
+		/*
+		 * Turn the JSON array into actual JSON.
+		 */
+		$json = json_encode($json);
+		file_put_contents('expenses/' . $committee->CommitteeCode . '.json', $json);
 		
 	}
 	
