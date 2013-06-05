@@ -496,7 +496,7 @@ foreach ($committees AS $committee)
 					(
 						'committee_code' => $committee->CommitteeCode,
 						'report_id' => $report->Id,
-						//'individual' => $contribution->Contributor->@attributes->IsIndividual,
+						'individual' => $contribution->Contributor->{@attributes}->IsIndividual,
 						'prefix' => $contribution->Contributor->Prefix,
 						'name_first' => $contribution->Contributor->FirstName,
 						'name_middle' => $contribution->Contributor->MiddleName,
@@ -536,7 +536,7 @@ foreach ($committees AS $committee)
 					(
 						'committee_code' => $committee->CommitteeCode,
 						'report_id' => $report->Id,
-						//'individual' => $expense->Payee->@attributes->IsIndividual,
+						'individual' => $expense->Payee->{@attributes}->IsIndividual,
 						'prefix' => $expense->Payee->Prefix,
 						'name_first' => $expense->Payee->FirstName,
 						'name_middle' => $expense->Payee->MiddleName,
