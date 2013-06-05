@@ -481,7 +481,7 @@ foreach ($committees AS $committee)
 		/*
 		 * Iterate through every individual contribution and and save it to a pair of CSV files.
 		 */
-		$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'a');
+		$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'w');
 		$fp_all = fopen('contributions.csv', 'a');
 		if (count($contributions) > 0)
 		{
@@ -521,7 +521,7 @@ foreach ($committees AS $committee)
 		/*
 		 * Iterate through every individual expenses and and save it to a pair of CSV files.
 		 */
-		$fp_committee = fopen('expenses/' . $committee->CommitteeCode . '.csv', 'a');
+		$fp_committee = fopen('expenses/' . $committee->CommitteeCode . '.csv', 'w');
 		$fp_all = fopen('expenses.csv', 'a');
 		if (count($expenses) > 0)
 		{
