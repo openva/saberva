@@ -394,10 +394,6 @@ else
  */
 unlink('contributions.csv');
 unlink('expenses.csv');
-rmdir('expenses');
-rmdir('contributions');
-mkdir('expenses');
-mkdir('contributions');
 
 /*
  * Iterate through the list of the committees to retrieve their XML and store that XML as JSON.
