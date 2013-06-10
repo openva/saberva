@@ -1,11 +1,5 @@
 <?php
 
-/**
- * TO DO
- * -When walking through the reports page, this will also include the Large Contributions table
- *  (I assume). The solution is probably to parse only the first table on the page.
- */
-
 /*
  * Set the timezone, not because we care, but because otherwise PHP throws warnings.
  */
