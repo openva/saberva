@@ -21,8 +21,23 @@ $reports_dir = 'reports/';
 $committees_dir = 'committees/';
 
 
+
+
 /**
+ * Campaign finance reports parser
+ *
+ * A collection of tools to gather and normalize campaign finance reports from the Virginia State
+ * Board of Elections.
  * 
+ * PHP version 5
+ *
+ * @author		Waldo Jaquith <waldo at jaquith.org>
+ * @copyright	2013 Waldo Jaquith
+ * @license		MIT
+ * @version		0.1
+ * @link		http://www.github.com/waldoj/saberva
+ * @since		0.1
+ *
  */
 class SaberVA
 {
