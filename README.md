@@ -4,7 +4,7 @@ A collection of free, open source tools to parse Virginia State Board of Electio
 
 The name, "Saberva," combines "State Board of Elections" and "Virginia" in a single word, and is rooted in the Spanish "saber," meaning "to know."
 
-## saberva.php
+## Usage
 
 Run at the command line: `php saberva.php`. It will retrieve a list of every campaign committee that has filed a report since January 1, 2012, and then retrieve a list of every report filed by that committee. The result is a large JSON file (several megabytes). It then iterates through that list of committees, creates a JSON file for each committee, retrieves every cited report, converts that report to JSON, and stores each report as a JSON file. (This produces thousands of JSON files.)
 
