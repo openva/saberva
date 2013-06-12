@@ -20,6 +20,11 @@ $reports_dir = 'reports/';
  */
 $committees_dir = 'committees/';
 
+/*
+ * The URL for the website where these files will be provided, including a trailing slash.
+ */
+$website_prefix = 'http://openva.com/campaign-finance/';
+
 
 
 
