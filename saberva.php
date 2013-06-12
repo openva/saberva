@@ -434,7 +434,6 @@ foreach ($committees AS $committee)
 	
 	echo $committee->CommitteeName . ': ' . $committee->CommitteeCode . ' saved to ' . $filename . PHP_EOL;
 	
-
 	foreach ($committee->Reports as $report)
 	{
 		
@@ -562,7 +561,7 @@ foreach ($committees AS $committee)
 		file_put_contents('contributions/' . $committee->CommitteeCode . '.json', $json);
 		
 		/*
-		 * Iterate through every individual expenses and and save it to a pair of CSV files.
+		 * Iterate through every individual expense and and save it to a pair of CSV files.
 		 */
 		$fp_committee = fopen('expenses/' . $committee->CommitteeCode . '.csv', 'w');
 		$fp_all = fopen('expenses.csv', 'a');
