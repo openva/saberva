@@ -311,7 +311,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	$page = json_decode($page);
 	$last_page = ceil($page->RecordCount  / $page->PageSize);
 	
-	echo 'Iterating through '.$page->RecordCount . ' records.' . PHP_EOL;
+	echo 'Iterating through ' . number_format($page->RecordCount) . ' records.' . PHP_EOL;
 	
 	/*
 	 * Create a new, empty object to store all of this committee data.
