@@ -361,6 +361,13 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			}
 			
 			/*
+			 * Provide a URL for the JSON file where detailed information about this committee can
+			 * be found.
+			 */
+			$committees->$j->api_url = $website_prefix . 'committees/' . $committee->CommitteeCode
+				. '.json';
+			
+			/*
 			 * Iterate our committee counter.
 			 */
 			$j++;
