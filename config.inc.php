@@ -32,6 +32,12 @@ define('COMMITTEES_DIR', 'committees/');
 define('WEBSITE_PREFIX', 'http://openva.com/campaign-finance/');
 
 /*
+ * The age of the committees.json file that will result in its data automatically being rebuilt
+ * via queries to the SBE's server, expressed in seconds.
+ */
+define('MAX_CACHE_AGE', '68000');
+
+/*
  * Set the timezone, not because that's actually at issue here, but because otherwise PHP throws
  * warnings.
  */

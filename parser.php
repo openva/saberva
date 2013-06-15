@@ -51,14 +51,27 @@ curl_setopt($ch, CURLOPT_POST, 1);
 $parser = new SaberVA;
 
 /*
- * Get any command-line arguments.
+ * If our committees.json file is older than our maximum cache age, then we want to reload
+ * it from the SBE's website.
+ */
+if ( (time - filemtime('committees.json')) > MAX_CACHE_AGE)
+{
+	$options['reload'] = TRUE;
+}
+
+/*
+ * Get any command-line arguments. This override any automatically set defaults.
  */
 $options = array();
 if ( isset($argv) && (count($argv) > 1) )
 {
-	if ($argv[1] == 'reload')
+	if (in_array('--reload', $argv))
 	{
 		$options['reload'] = TRUE;
+	}
+	if (in_array('--from-cache', $argv))
+	{
+		$options['reload'] = FALSE;
 	}
 }
 
@@ -76,7 +89,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	$page = $parser->fetch_page(1);
 	if ($page === FALSE)
 	{
-		die('Could not retrieve first page.');
+		die('Could not retrieve first page.' . PHP_EOL);
 	}
 	$page = json_decode($page);
 	$last_page = ceil($page->RecordCount  / $page->PageSize);
