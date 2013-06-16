@@ -6,11 +6,13 @@ The name, "Saberva," combines "State Board of Elections" and "Virginia" in a sin
 
 ## Usage
 
-Run at the command line: `php parser.php`. It will retrieve a list of every campaign committee that has filed a report since January 1, 2012, and then retrieve a list of every report filed by that committee. The result is a large JSON file (several megabytes). It then iterates through that list of committees, creates a JSON file for each committee, retrieves every cited report, converts that report to JSON, and stores each report as a JSON file. (This produces thousands of JSON files.) Customizations can be made in `config.inc.php`.
+Run at the command line: `php parser.php`. It will retrieve a list of every campaign committee that has filed a report since January 1, 2012, and then retrieve a list of every report filed by that committee. The result is a large JSON file (several megabytes). It then iterates through that list of committees, creates a JSON file for each committee, retrieves every cited report, converts that report to JSON, and stores each report as a JSON file. (This produces thousands of JSON files.) Finally, it creates CSV versions of each JSON file, as well as `contributions.csv` and `expenses.csv` files that contain all contributions to and expenditures by all committees. 
 
 Because the master committee list is demanding to assemble, `committees.json`, will not be refreshed unless a) 18 hours have elapsed since it was last built b) `--reload` is passed as a command-line argument (e.g., `php saberva.php --reload`) or c) `committees.json` does not exist.
 
 ### Options
+
+Customizations can be made in `config.inc.php`.
 
 `--reload` / `-r`: Force `committees.json`—the master committees list—to be rebuilt from the SBE's website, even if it is less than 18 hours old.
 
@@ -20,14 +22,23 @@ Because the master committee list is demanding to assemble, `committees.json`, w
 
 `--progress-meter` / `-p`: Display a progress meter as `committees.json` is built.
 
-Each option must be provided individually (e.g., `php saberva.php -c -p`), rather than grouped (e.g., `php saberva -cp`).
+`--help` / `-h`: Displays a list of parameters and usage examples.
+
+Each switch must be provided individually (e.g., `php saberva.php -c -p`), rather than grouped (e.g., `php saberva -cp`).
 
 ## Resulting files
 
 * committees.json
 * committees.csv
-* committee/*.json
+* committees/*.json
+* committees/*.csv
 * report/*.json
+* expenses.csv
+* expenses/*.json
+* expenses/*.csv
+* contributions/*.csv
+* contributions/*.json
+* contributions.csv
 
 ## Data source update schedule
 
