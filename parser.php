@@ -64,6 +64,7 @@ if ( (time - filemtime('committees.json')) > MAX_CACHE_AGE)
  */
 $options = array();
 $options['verbosity'] = 3;
+$options['progress'] = FALSE;
 if ( isset($argv) && (count($argv) > 1) )
 {
 	if (in_array('--reload', $argv))
@@ -77,6 +78,11 @@ if ( isset($argv) && (count($argv) > 1) )
 	if ( in_array('--verbose', $argv) || in_array('-v', $argv) )
 	{
 		$options['verbosity'] = 10;
+	}
+	if ( in_array('--progress-meter', $argv) || in_array('-p', $argv) )
+	{
+		$options['progress_meter'] = TRUE;
+		$options['verbosity'] = 1;
 	}
 }
 
@@ -98,6 +104,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	}
 	$page = json_decode($page);
 	$last_page = ceil($page->RecordCount  / $page->PageSize);
+	$total_records = $page->RecordCount;
 	
 	if ($options['verbosity'] >= 1)
 	{
@@ -180,12 +187,42 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 		}
 		
 		/*
+		 * Display the progress of downloading the committee records.
+		 */
+		if ($options['progress_meter'] === TRUE)
+		{
+			
+			$display_cols = 80;
+			
+			/*
+			 * Calculate the percentage of completion. This is expressed as a whole number (e.g.,
+			 * 50), rather than as a decimal (e.g., 0.5).
+			 */
+			$percent = round($i / ceil($total_records / count($page->Committees)) * (($display_cols - 6) / 100) * 100);
+			
+			/*
+			 * Clear out the entire line and update it with a new graph, on each iteration. 
+			 */
+			echo str_repeat(chr(8), $display_cols)
+				. '['
+				. str_repeat('*', $percent)
+				. str_repeat(' ', $display_cols - $percent - 6)
+				. '] '
+				. str_pad($percent, 2, '0', STR_PAD_LEFT) . '%';
+		}
+		
+		/*
 		 * Don't flood the SBE's server -- only issue one request per second. (Of course, each
 		 * request is spawning ten child requests, one for each row in the list of committes, so
 		 * this isn't as conservative as it sounds.)
 		 */
 		sleep(1);
 		
+	}
+	
+	if ($options['progress_meter'] === TRUE)
+	{
+		echo PHP_EOL . PHP_EOL;
 	}
 	
 	/*
