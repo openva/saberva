@@ -63,6 +63,7 @@ if ( (time - filemtime('committees.json')) > MAX_CACHE_AGE)
  * Get any command-line arguments. This override any automatically set defaults.
  */
 $options = array();
+$options['verbosity'] = 3;
 if ( isset($argv) && (count($argv) > 1) )
 {
 	if (in_array('--reload', $argv))
@@ -72,6 +73,10 @@ if ( isset($argv) && (count($argv) > 1) )
 	if (in_array('--from-cache', $argv))
 	{
 		$options['reload'] = FALSE;
+	}
+	if ( in_array('--verbose', $argv) || in_array('-v', $argv) )
+	{
+		$options['verbosity'] = 10;
 	}
 }
 
@@ -94,7 +99,10 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	$page = json_decode($page);
 	$last_page = ceil($page->RecordCount  / $page->PageSize);
 	
-	echo 'Iterating through ' . number_format($page->RecordCount) . ' records.' . PHP_EOL;
+	if ($options['verbosity'] >= 1)
+	{
+		echo 'Iterating through ' . number_format($total_records) . ' records.' . PHP_EOL;
+	}
 	
 	/*
 	 * Create a new, empty object to store all of this committee data.
@@ -136,7 +144,10 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			if ($result !== FALSE)
 			{
 				$committees->$j->Reports = $parser->reports;
-				echo $committee->CommitteeName . PHP_EOL;
+				if ($options['verbosity'] >= 5)
+				{
+					echo $committee->CommitteeName . ' reports retrieved.' . PHP_EOL;
+				}
 				
 				/*
 				 * Provide an API URL for each report.
@@ -148,7 +159,10 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			}
 			else
 			{
-				echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
+				if ($options['verbosity'] >= 1)
+				{
+					echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
+				}
 			}
 			
 			/*
@@ -223,7 +237,11 @@ foreach ($committees AS $committee)
 	 */
 	file_put_contents($filename, json_encode($committee));
 	
-	echo $committee->CommitteeName . ': ' . $committee->CommitteeCode . ' saved to ' . $filename . PHP_EOL;
+	if ($options['verbosity'] >= 5)
+	{
+		echo $committee->CommitteeName . ': ' . $committee->CommitteeCode . ' saved to '
+			. $filename . PHP_EOL;
+	}
 	
 	foreach ($committee->Reports as $report)
 	{
@@ -246,7 +264,10 @@ foreach ($committees AS $committee)
 			$xml = $parser->fetch_html();
 			if ($xml === FALSE)
 			{
-				echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
+				if ($options['verbosity'] >= 3)
+				{
+					echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
+				}
 				continue;
 			}
 			
@@ -257,7 +278,10 @@ foreach ($committees AS $committee)
 			$result = $parser->xml_to_json();
 			if ($result === FALSE)
 			{
-				echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
+				if ($options['verbosity'] >= 3)
+				{
+					echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
+				}
 				continue;
 			}
 					
@@ -426,13 +450,19 @@ foreach ($committees AS $committee)
 $fp = fopen('committees.csv', 'w');
 if ($fp === FALSE)
 {
-	echo 'Could not create committees.csv file to store committee metadata' . PHP_EOL;
+	if ($options['verbosity'] >= 1)
+	{
+		echo 'Could not create committees.csv file to store committee metadata' . PHP_EOL;
+	}
 }
 
 else
 {
-	
-	echo 'Stored metadata about each committee in committees.csv' . PHP_EOL;
+
+	if ($options['verbosity'] >= 2)
+	{
+		echo 'Stored metadata about each committee in committees.csv' . PHP_EOL;
+	}
 	
 	/*
 	 * Create our CSV column headers.
