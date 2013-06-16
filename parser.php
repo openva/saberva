@@ -67,11 +67,11 @@ $options['verbosity'] = 3;
 $options['progress'] = FALSE;
 if ( isset($argv) && (count($argv) > 1) )
 {
-	if (in_array('--reload', $argv))
+	if ( in_array('--reload', $argv) || in_array('-r', $argv) )
 	{
 		$options['reload'] = TRUE;
 	}
-	if (in_array('--from-cache', $argv))
+	if ( in_array('--from-cache', $argv) || in_array('-c', $argv) )
 	{
 		$options['reload'] = FALSE;
 	}
@@ -115,6 +115,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	 * Create a new, empty object to store all of this committee data.
 	 */
 	$committees = new stdClass();
+		
 	
 	/*
 	 * Iterate through every page of records.
