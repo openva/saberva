@@ -194,22 +194,23 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 		{
 			
 			$display_cols = 80;
+			$graph_cols = 73;
 			
 			/*
 			 * Calculate the percentage of completion. This is expressed as a whole number (e.g.,
 			 * 50), rather than as a decimal (e.g., 0.5).
 			 */
-			$percent = round($i / ceil($total_records / count($page->Committees)) * (($display_cols - 6) / 100) * 100);
+			$percent = round($i / ceil($total_records / count($page->Committees)) * ($graph_cols / 100) * 100);
 			
 			/*
-			 * Clear out the entire line and update it with a new graph, on each iteration. 
+			 * Clear out the entire line and update it with a new graph, on each iteration.
 			 */
 			echo str_repeat(chr(8), $display_cols)
 				. '['
-				. str_repeat('*', $percent)
-				. str_repeat(' ', $display_cols - $percent - 6)
+				. str_repeat('*', $percent * ($graph_cols / 100) )
+				. str_repeat(' ', $graph_cols - ($percent * ($graph_cols / 100) ) )
 				. '] '
-				. str_pad($percent, 2, '0', STR_PAD_LEFT) . '%';
+				. str_pad($percent, 3, ' ', STR_PAD_LEFT) . '%';
 		}
 		
 		/*
