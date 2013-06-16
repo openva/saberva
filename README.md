@@ -8,7 +8,19 @@ The name, "Saberva," combines "State Board of Elections" and "Virginia" in a sin
 
 Run at the command line: `php parser.php`. It will retrieve a list of every campaign committee that has filed a report since January 1, 2012, and then retrieve a list of every report filed by that committee. The result is a large JSON file (several megabytes). It then iterates through that list of committees, creates a JSON file for each committee, retrieves every cited report, converts that report to JSON, and stores each report as a JSON file. (This produces thousands of JSON files.) Customizations can be made in `config.inc.php`.
 
-The master committee list, `committees.json`, will not be refreshed unless it's deleted, or unless `reload` is passed as a command-line argument (e.g., `php saberva.php reload`).
+Because the master committee list is demanding to assemble, `committees.json`, will not be refreshed unless a) 18 hours have elapsed since it was last built b) `--reload` is passed as a command-line argument (e.g., `php saberva.php --reload`) or c) `committees.json` does not exist.
+
+### Options
+
+`--reload` / `-r`: Force `committees.json`—the master committees list—to be rebuilt from the SBE's website, even if it is less than 18 hours old.
+
+`--from-cache` / `-c`: Use the cached version of `committees.json`, no matter how old it is.
+
+`--verbose` / `-v`: Display additional progress information.
+
+`--progress-meter` / `-p`: Display a progress meter as `committees.json` is built.
+
+Each option must be provided individually (e.g., `php saberva.php -c -p`), rather than grouped (e.g., `php saberva -cp`).
 
 ## Resulting files
 
