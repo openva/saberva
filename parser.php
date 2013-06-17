@@ -11,7 +11,7 @@
  * @copyright	2013 Waldo Jaquith
  * @license		MIT
  * @version		0.1
- * @link		http://www.github.com/waldoj/saberva
+ * @link		http://www.github.com/openva/saberva
  * @since		0.1
  *
  */
