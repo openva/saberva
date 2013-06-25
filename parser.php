@@ -27,6 +27,11 @@ require('class.Saberva.inc.php');
 include('class.simple_html_dom.inc.php');
 
 /*
+ * Include the mailing address normalizer.
+ */
+include('class.AddressStandardizationSolution.inc.php');
+
+/*
  * Include the config file.
  */
 include('config.inc.php');
