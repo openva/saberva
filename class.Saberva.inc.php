@@ -208,6 +208,24 @@ class SaberVA
 		
 	}
 	
+	/**
+	* Normalize addresses (Road -> Rd.; Street -> St.; etc.) This relies on the presence of
+	* class.AddressStandardizationSolution.inc.php. If the class is not present, it will silently
+	* return the provided address, because that's less bad than returning false.
+	*/
+	function normalize_address($address)
+	{
+		if (class_exists('AddressStandardizationSolution'))
+		{
+			$normalizer = new AddressStandardizationSolution;
+			return $normalizer->AddressLineStandardization($address);
+		}
+		else
+		{
+			return $address;
+		}
+	}
+	
 	
 	/**
 	 * Retrieve the HTML for a given URL.
