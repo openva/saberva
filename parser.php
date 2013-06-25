@@ -194,7 +194,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			 * Provide a URL for the JSON file where detailed information about this committee can
 			 * be found.
 			 */
-			$committees->$j->api_url = WEBSITE_PREFIX . 'committees/' . $committee->CommitteeCode
+			$committees->$j->api_url = WEBSITE_PREFIX . COMMITTEES_DIR . $committee->CommitteeCode
 				. '.json';
 			
 			/*
