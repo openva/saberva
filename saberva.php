@@ -95,10 +95,11 @@ if ( isset($argv) && (count($argv) > 1) )
 		echo 'Saberva: Parser for campaign finance data from the VA State Board of Elections.' . PHP_EOL . PHP_EOL;
 		echo 'usage: php saberva.php [-rvph]' . PHP_EOL . PHP_EOL;
 		echo 'Arguments:' . PHP_EOL;
+		echo "-c / --from-cache\tUse the cached version of committees.json, no matter how old it is." . PHP_EOL;
+		echo "-h / --help\t\tDisplay this message." . PHP_EOL;
+		echo "-p / --progress-meter\tDisplay a graph while building committees.json." . PHP_EOL;
 		echo "-r / --reload\t\tRebuild committees.json, regardless of its recency." . PHP_EOL;
 		echo "-v / --verbose\t\tDisplay detailed output." . PHP_EOL;
-		echo "-p / --progress-meter\tDisplay a graph while building committees.json." . PHP_EOL;
-		echo "-h / --help\t\tDisplay this message." . PHP_EOL;
 		exit();
 	}
 }
