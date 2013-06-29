@@ -275,8 +275,14 @@ else
  * Remove these files, since we're about to recreate them. (We append to these files in a loop. If
  * we don't delete them here, these files will simply get longer every time that we run this.)
  */
-unlink('contributions.csv');
-unlink('expenses.csv');
+if (file_exists('contributions.csv'))
+{
+	unlink('contributions.csv');
+}
+if (file_exists('expenses.csv'))
+{
+	unlink('expenses.csv');
+}
 
 /*
  * Iterate through the list of the committees to retrieve their XML and store that XML as JSON.
