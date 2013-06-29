@@ -182,7 +182,7 @@ class SaberVA
 	
 	
 	/**
-	 * Convert the SBE's XML into JSON.
+	 * Convert the SBE's XML into JSON, making some changes while we're at it.
 	 */
 	function xml_to_json()
 	{
@@ -191,13 +191,37 @@ class SaberVA
 		{
 			return FALSE;
 		}
-	
+		
+		/*
+		 * Turn the XML into an object.
+		 */
 		$report = simplexml_load_string($this->xml);
 		if ($report === FALSE)
 		{
 			return FALSE;
 		}
 		
+		/*
+		 * Normalize all address records within this report.
+		 */
+		$report->ReportHeader->Address->Line1 = $this->normalize_address($report->ReportHeader->Address->Line1);
+		$report->ReportHeader->Address->Line2 = $this->normalize_address($report->ReportHeader->Address->Line2);
+		foreach ($report->ScheduleA->LiA as $LiA)
+		{
+			$LiA->Contributor->Address->Line1 = $this->normalize_address($LiA->Contributor->Address->Line1);
+			$LiA->Contributor->Address->Line2 = $this->normalize_address($LiA->Contributor->Address->Line2);
+			$LiA->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness = $this->normalize_address($LiA->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness);
+		}
+		foreach ($report->ScheduleD->LiD as $LiD)
+		{
+			$LiD->Payee->Address->Line1 = $this->normalize_address($LiD->Payee->Address->Line1);
+			$LiD->Payee->Address->Line2 = $this->normalize_address($LiD->Payee->Address->Line2);
+			$LiD->Payee->PrimaryCityAndStateOfEmploymentOrBusiness = $this->normalize_address($LiD->Payee->PrimaryCityAndStateOfEmploymentOrBusiness);
+		}
+		
+		/*
+		 * Encode the PHP object as JSON.
+		 */
 		$this->report_json = json_encode($report);
 		if ($this->report_json === FALSE)
 		{
