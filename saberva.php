@@ -347,7 +347,7 @@ foreach ($committees AS $committee)
 				}
 				continue;
 			}
-					
+				
 			/*
 			 * Save a copy of the JSON to a file.
 			 */
@@ -396,29 +396,28 @@ foreach ($committees AS $committee)
 			
 			foreach ($contributions as $contribution)
 			{
-			
+				
 				$record = array
 					(
 						'committee_code' => $committee->CommitteeCode,
 						'report_id' => $report->Id,
-						'individual' => $contribution->Contributor->{@attributes}->IsIndividual,
-						'prefix' => $contribution->Contributor->Prefix,
-						'name_first' => $contribution->Contributor->FirstName,
-						'name_middle' => $contribution->Contributor->MiddleName,
-						'name_last' => $contribution->Contributor->LastName,
-						'address_1' => $contribution->Contributor->Address->Line1,
-						'address_2' => $contribution->Contributor->Address->Line2,
-						'address_city' => $contribution->Contributor->Address->City,
-						'address_state' => $contribution->Contributor->Address->State,
-						'address_zip' => $contribution->Contributor->Address->ZipCode,
-						'employer' => $contribution->Contributor->NameOfEmployer,
-						'occupation' => $contribution->Contributor->OccupationOrTypeOfBusiness,
-						'employment_place' => $contribution->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness,
-						'date' => $contribution->TransactionDate,
-						'amount' => $contribution->Amount,
-						'cumulative_amount' => $contribution->TotalToDate
+						'individual' => (string) $contribution->Contributor->{@attributes}->IsIndividual,
+						'prefix' => (string) $contribution->Contributor->Prefix,
+						'name_first' => (string) $contribution->Contributor->FirstName,
+						'name_middle' => (string) $contribution->Contributor->MiddleName,
+						'name_last' => (string) $contribution->Contributor->LastName,
+						'address_1' => (string) $contribution->Contributor->Address->Line1,
+						'address_2' => (string) $contribution->Contributor->Address->Line2,
+						'address_city' => (string) $contribution->Contributor->Address->City,
+						'address_state' => (string) $contribution->Contributor->Address->State,
+						'address_zip' => (string) $contribution->Contributor->Address->ZipCode,
+						'employer' => (string) $contribution->Contributor->NameOfEmployer,
+						'occupation' => (string) $contribution->Contributor->OccupationOrTypeOfBusiness,
+						'employment_place' => (string) $contribution->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness,
+						'date' => (string) $contribution->TransactionDate,
+						'amount' => (string) $contribution->Amount,
+						'cumulative_amount' => (string) $contribution->TotalToDate
 					);
-					
 				fputcsv($fp_committee, $record);
 				fputcsv($fp_all, $record);
 				
@@ -462,20 +461,20 @@ foreach ($committees AS $committee)
 					(
 						'committee_code' => $committee->CommitteeCode,
 						'report_id' => $report->Id,
-						'individual' => $expense->Payee->{@attributes}->IsIndividual,
-						'prefix' => $expense->Payee->Prefix,
-						'name_first' => $expense->Payee->FirstName,
-						'name_middle' => $expense->Payee->MiddleName,
-						'name_last' => $expense->Payee->LastName,
-						'address_1' => $expense->Payee->Address->Line1,
-						'address_2' => $expense->Payee->Address->Line2,
-						'address_city' => $expense->Payee->Address->City,
-						'address_state' => $expense->Payee->Address->State,
-						'address_zip' => $expense->Payee->Address->ZipCode,
-						'date' => $expense->TransactionDate,
-						'amount' => $expense->Amount,
-						'authorized_by' => $expense->AuthorizingName,
-						'purchased' => $expense->ItemOrService
+						'individual' => (string) $expense->Payee->{@attributes}->IsIndividual,
+						'prefix' => (string) $expense->Payee->Prefix,
+						'name_first' => (string) $expense->Payee->FirstName,
+						'name_middle' => (string) $expense->Payee->MiddleName,
+						'name_last' => (string) $expense->Payee->LastName,
+						'address_1' => (string) $expense->Payee->Address->Line1,
+						'address_2' => (string) $expense->Payee->Address->Line2,
+						'address_city' => (string) $expense->Payee->Address->City,
+						'address_state' => (string) $expense->Payee->Address->State,
+						'address_zip' => (string) $expense->Payee->Address->ZipCode,
+						'date' => (string) $expense->TransactionDate,
+						'amount' => (string) $expense->Amount,
+						'authorized_by' => (string) $expense->AuthorizingName,
+						'purchased' => (string) $expense->ItemOrService
 					);
 				
 				fputcsv($fp_committee, $record);
