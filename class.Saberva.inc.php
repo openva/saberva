@@ -254,10 +254,24 @@ class SaberVA
 	*/
 	function normalize_address($address)
 	{
+		
 		if (class_exists('AddressStandardizationSolution'))
 		{
+			
 			$normalizer = new AddressStandardizationSolution;
-			return $normalizer->AddressLineStandardization($address);
+			$new_address = $normalizer->AddressLineStandardization($address);
+			
+			/*
+			 * Sometimes AddressStandardizationSolution returns an object when it should return a
+			 * blank address field (e.g., address is ".", it returns an empty object). When that
+			 * happens, substitute a blank field.
+			 */
+			if (is_object($new_address))
+			{
+				$new_address = '';
+			}
+			return $new_address;
+			
 		}
 		else
 		{
