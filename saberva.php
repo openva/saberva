@@ -59,7 +59,7 @@ $parser = new SaberVA;
  * If our committees.json file is older than our maximum cache age, then we want to reload
  * it from the SBE's website.
  */
-if ( (time - filemtime('committees.json')) > MAX_CACHE_AGE)
+if ( !file_exists('committees.json') || ( (time - filemtime('committees.json')) > MAX_CACHE_AGE) )
 {
 	$options['reload'] = TRUE;
 }
@@ -456,7 +456,7 @@ foreach ($committees AS $committee)
 			
 			foreach($expenses as $expense)
 			{
-
+				
 				$record = array
 					(
 						'committee_code' => $committee->CommitteeCode,
