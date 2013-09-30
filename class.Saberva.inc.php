@@ -200,7 +200,26 @@ class SaberVA
 		{
 			return FALSE;
 		}
-		
+
+		/*
+		 * Recess single-element LiA and LiD elements by a single level, in order to make them
+		 * consistent with multiple-element reports.
+		 */		
+		if (count($report->ScheduleA->LiA) === 1)
+		{
+			$tmp = $report->ScheduleA->LiA;
+			$report->ScheduleA->LiA = array();
+			$report->ScheduleA->LiA[] = $tmp;
+			unset($tmp);
+		}
+		if (count($report->ScheduleA->LiD) === 1)
+		{
+			$tmp = $report->ScheduleA->LiD;
+			$report->ScheduleA->LiD = array();
+			$report->ScheduleA->LiD[] = $tmp;
+			unset($tmp);
+		}
+
 		/*
 		 * Normalize all address records within this report.
 		 */
