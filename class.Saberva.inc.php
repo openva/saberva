@@ -303,6 +303,18 @@ class SaberVA
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);  
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);  
 		$html = curl_exec($curl);
+		
+		/*
+		 * Get the HTTP status code, turn it into an integer, and make sure we haven't gotten an
+		 * error.
+		 */
+		$http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE) + 0;
+		if ($http_status >= 400)
+		{
+			die('The Virginia State Board of Elections server is returning an HTTP ' . $http_status
+				. ' header -- halting execution.' . PHP_EOL);
+		}
+		
 		curl_close($curl);
 		
 		return $html;
