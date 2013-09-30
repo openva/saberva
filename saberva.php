@@ -257,6 +257,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
  */
 else
 {
+	
 	$committees = file_get_contents('committees.json');
 	if ($committees === FALSE)
 	{
@@ -269,6 +270,7 @@ else
 		die('Fatal error: Committee data cached in committees.json is comprised of invalid JSON.'
 			. PHP_EOL);
 	}
+	
 }
 
 /*
@@ -325,13 +327,16 @@ foreach ($committees AS $committee)
 			 */
 			$parser->url = $report->XmlUrl;
 			$xml = $parser->fetch_content();
+			
 			if ($xml === FALSE)
 			{
+			
 				if ($options['verbosity'] >= 3)
 				{
 					echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
 				}
 				continue;
+				
 			}
 			
 			/*
@@ -341,11 +346,13 @@ foreach ($committees AS $committee)
 			$result = $parser->xml_to_json();
 			if ($result === FALSE)
 			{
+			
 				if ($options['verbosity'] >= 3)
 				{
 					echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
 				}
 				continue;
+				
 			}
 				
 			/*
