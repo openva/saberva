@@ -77,7 +77,7 @@ class SaberVA
 		/*
 		 * Retrieve the HTML from $this->url.
 		 */
-		$html = $this->fetch_html();
+		$html = $this->fetch_content();
 		 
 		/*
 		 * Run the HTML through Simple HTML Dom.
@@ -288,9 +288,9 @@ class SaberVA
 	
 	
 	/**
-	 * Retrieve the HTML for a given URL.
+	 * Retrieve the content for a given URL.
 	 */
-	function fetch_html()
+	function fetch_content()
 	{
 		
 		if (!isset($this->url))

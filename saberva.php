@@ -324,7 +324,7 @@ foreach ($committees AS $committee)
 			 * Save the remote XML to a string.
 			 */
 			$parser->url = $report->XmlUrl;
-			$xml = $parser->fetch_html();
+			$xml = $parser->fetch_content();
 			if ($xml === FALSE)
 			{
 				if ($options['verbosity'] >= 3)
