@@ -38,11 +38,10 @@ include('config.inc.php');
 
 
 /*
- * Initialize our cURL session.
+ * Establish our inaugural query, getting the first page of the committee list.
  */
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 curl_setopt($ch, CURLOPT_URL, 'http://cfreports.sbe.virginia.gov/Home/SearchCommittees');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $allowed_protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
@@ -133,7 +132,6 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	 * Create a new, empty object to store all of this committee data.
 	 */
 	$committees = new stdClass();
-		
 	
 	/*
 	 * Iterate through every page of records.
@@ -157,6 +155,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 		 */
 		foreach ($page->Committees as $committee)
 		{
+		
 			/*
 			 * Add the committee data to our $committees object.
 			 */
@@ -169,6 +168,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			$result = $parser->fetch_reports();
 			if ($result !== FALSE)
 			{
+			
 				$committees->$j->Reports = $parser->reports;
 				if ($options['verbosity'] >= 5)
 				{
@@ -182,13 +182,16 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 				{
 					$report->api_url = WEBSITE_PREFIX . REPORTS_DIR . $report->Id . '.json';
 				}
+				
 			}
 			else
 			{
+			
 				if ($options['verbosity'] >= 1)
 				{
 					echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
 				}
+				
 			}
 			
 			/*

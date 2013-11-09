@@ -52,6 +52,10 @@ class SaberVA
 		{
 			echo curl_error($ch) . PHP_EOL;
 		}
+		elseif (strpos($json, 'An error occurred while processing your request') !== FALSE)
+		{
+			echo 'An error was returned by the SBE server.' . PHP_EOL;
+		}
 	
 		return $json;
 		
