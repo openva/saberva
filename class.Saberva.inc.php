@@ -109,12 +109,18 @@ class SaberVA
 		foreach ($html->find('tr.report') as $row)
 		{
 			
+			
+			/*
+			 * Create a new object to hold this report's data.
+			 */
+			$report = new stdClass();
+			
 			$report->Period = $row->find('td', 0)->plaintext;
 			$report->Amendment = $row->find('td', 1)->plaintext;
 			$report->DateFiled = $row->find('td', 2)->plaintext;
 			$report->Contributions = $row->find('td', 3)->plaintext;
 			$report->EndingBalance = $row->find('td', 4)->plaintext;
-			$report->Url = $row->find('td', 5)->find('a', 0)->href;		
+			$report->Url = $row->find('td', 5)->find('a', 0)->href;
 			
 			/*
 			 * Iterate through every field, trim them down, and replace multiple spaces with single spaces.
