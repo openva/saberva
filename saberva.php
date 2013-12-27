@@ -34,8 +34,7 @@ include('class.AddressStandardizationSolution.inc.php');
 /*
  * Include the config file.
  */
-include('config.inc.php');
-
+require('config.inc.php');
 
 /*
  * Establish our inaugural query, getting the first page of the committee list.
