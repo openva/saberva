@@ -40,7 +40,8 @@ require('config.inc.php');
  * Establish our inaugural query, getting the first page of the committee list.
  */
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000);
 curl_setopt($ch, CURLOPT_URL, 'http://cfreports.sbe.virginia.gov/Home/SearchCommittees');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $allowed_protocols = CURLPROTO_HTTP | CURLPROTO_HTTPS;
