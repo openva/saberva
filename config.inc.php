@@ -17,6 +17,11 @@
  */
 
 /*
+ * Only report serious errors.
+ */
+error_reporting(2039);
+
+/*
  * Specify the name of the directory in which we'll store the report JSON files.
  */
 define('REPORTS_DIR', 'reports/');
