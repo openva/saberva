@@ -37,7 +37,7 @@ include('class.AddressStandardizationSolution.inc.php');
 require('config.inc.php');
 
 /*
- * Establish our inaugural query, getting the first page of the committee list.
+ * Initialize our cURL session.
  */
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
@@ -89,10 +89,14 @@ if ( isset($argv) && (count($argv) > 1) )
 		$options['progress_meter'] = TRUE;
 		$options['verbosity'] = 1;
 	}
+	if ( in_array('--atomize', $argv) || in_array('-a', $argv) )
+	{
+		$options['atomize_json'] = TRUE;
+	}
 	if ( in_array('--help', $argv) || in_array('-h', $argv) )
 	{
 		echo 'Saberva: Parser for campaign finance data from the VA State Board of Elections.' . PHP_EOL . PHP_EOL;
-		echo 'usage: php saberva.php [-rvph]' . PHP_EOL . PHP_EOL;
+		echo 'usage: php saberva.php [-rvphac]' . PHP_EOL . PHP_EOL;
 		echo 'Arguments:' . PHP_EOL;
 		echo "-c / --from-cache\tUse the cached version of committees.json, no matter how old it is." . PHP_EOL;
 		echo "-h / --help\t\tDisplay this message." . PHP_EOL;
@@ -133,6 +137,7 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 	 * Create a new, empty object to store all of this committee data.
 	 */
 	$committees = new stdClass();
+		
 	
 	/*
 	 * Iterate through every page of records.
@@ -156,7 +161,6 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 		 */
 		foreach ($page->Committees as $committee)
 		{
-		
 			/*
 			 * Add the committee data to our $committees object.
 			 */
@@ -169,7 +173,6 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 			$result = $parser->fetch_reports();
 			if ($result !== FALSE)
 			{
-			
 				$committees->$j->Reports = $parser->reports;
 				if ($options['verbosity'] >= 5)
 				{
@@ -183,16 +186,13 @@ if ( !file_exists('committees.json') || ($options['reload'] === TRUE) )
 				{
 					$report->api_url = WEBSITE_PREFIX . REPORTS_DIR . $report->Id . '.json';
 				}
-				
 			}
 			else
 			{
-			
 				if ($options['verbosity'] >= 1)
 				{
 					echo $committee->CommitteeName . ' retrieval failed' . PHP_EOL;
 				}
-				
 			}
 			
 			/*
@@ -392,8 +392,10 @@ foreach ($committees AS $committee)
 		 */
 		$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'w');
 		$fp_all = fopen('contributions.csv', 'a');
+		
 		if (count($contributions) > 0)
 		{
+		
 			$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
 				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
 				'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
@@ -405,6 +407,7 @@ foreach ($committees AS $committee)
 			 */
 			$json = array();
 			
+			$i=0;
 			foreach ($contributions as $contribution)
 			{
 				
@@ -433,11 +436,48 @@ foreach ($committees AS $committee)
 				fputcsv($fp_all, $record);
 				
 				/*
+				 * Save this individual contribution as a JSON file.
+				 */
+				if ($options['atomize_json'] == TRUE)
+				{
+				
+					if (is_dir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/') === FALSE)
+					{
+						if (mkdir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/', 0777, TRUE) === FALSE)
+						{
+							die('Cannot create contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/');
+						}
+					}
+					
+					/*
+					 * Add some additional fields to help us index this data.
+					 */
+					$contribution->type = 'expense';
+					$contribution->ReportId = $report->Id;
+					$contribution->CommitteeCode = $committee->CommitteeCode;
+					$contribution->CommitteeName = $committee->CommitteeName;
+					if (isset($committee->CandidateName))
+					{
+						$contribution->CandidateName = $committee->CandidateName;
+					}
+					
+					/*
+					 * Save the expense as a JSON file.
+					 */
+					file_put_contents('contributions/' . $committee->CommitteeCode . '/' . $report->Id
+						. '/' . str_pad($i, 5, '0', STR_PAD_LEFT) . '.json', json_encode($contribution));
+						
+				}
+				
+				/*
 				 * Append this record to our JSON array.
 				 */
 				$json[] = $record;
 				
+				$i++;
+				
 			}
+			
 		}
 		fclose($fp_committee);
 		fclose($fp_all);
@@ -465,6 +505,7 @@ foreach ($committees AS $committee)
 			 */
 			$json = array();
 			
+			$i=0;
 			foreach($expenses as $expense)
 			{
 				
@@ -492,9 +533,45 @@ foreach ($committees AS $committee)
 				fputcsv($fp_all, $record);
 				
 				/*
+				 * Save this individual expense as a JSON file.
+				 */
+				if ($options['atomize_json'] == TRUE)
+				{
+					
+					if (is_dir('expenses/' . $committee->CommitteeCode . '/' . $report->Id . '/') === FALSE)
+					{
+						if (mkdir('expenses/' . $committee->CommitteeCode . '/' . $report->Id . '/', 0777, TRUE) === FALSE)
+						{
+							die('Cannot create expenses/' . $committee->CommitteeCode . '/' . $report->Id . '/');
+						}
+					}
+					
+					/*
+					 * Add some additional fields to help us index this data.
+					 */
+					$expense->type = 'expense';
+					$expense->ReportId = $report->Id;
+					$expense->CommitteeCode = $committee->CommitteeCode;
+					$expense->CommitteeName = $committee->CommitteeName;
+					if (isset($committee->CandidateName))
+					{
+						$expense->CandidateName = $committee->CandidateName;
+					}
+					
+					/*
+					 * Save the expense as a JSON file.
+					 */
+					file_put_contents('expenses/' . $committee->CommitteeCode . '/' . $report->Id
+						. '/' . str_pad($i, 5, '0', STR_PAD_LEFT) . '.json', json_encode($expense));
+						
+				}
+				
+				/*
 				 * Append this record to our JSON array.
 				 */
 				$json[] = $record;
+				
+				$i++;
 				
 			}
 		}
