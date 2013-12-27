@@ -29,7 +29,7 @@ define('COMMITTEES_DIR', 'committees/');
 /*
  * The URL for the website where these files will be provided, including a trailing slash.
  */
-define('WEBSITE_PREFIX', 'http://openva.com/campaign-finance/');
+define('WEBSITE_PREFIX', 'http://www.richmondsunlight.com/finance/');
 
 /*
  * The age of the committees.json file that will result in its data automatically being rebuilt
