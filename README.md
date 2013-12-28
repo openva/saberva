@@ -18,6 +18,8 @@ Customizations can be made in `config.inc.php`.
 
 `--from-cache` / `-c`: Use the cached version of `committees.json`, no matter how old it is.
 
+`--atomize` / `-a`: Create individual JSON files for every contribution and expense.
+
 `--verbose` / `-v`: Display additional progress information.
 
 `--progress-meter` / `-p`: Display a progress meter as `committees.json` is built.
