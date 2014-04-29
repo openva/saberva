@@ -297,6 +297,10 @@ if (file_exists('expenses.csv'))
 /*
  * Iterate through the list of the committees to retrieve their XML and store that XML as JSON.
  */
+if ($options['verbosity'] >= 5)
+{
+	echo number_format(count((array) $committees)) . ' committees' . PHP_EOL;
+}
 foreach ($committees AS $committee)
 {
 	
