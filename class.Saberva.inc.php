@@ -213,7 +213,9 @@ class SaberVA
 
 		/*
 		 * Recess single-element LiA and LiD elements by a single level, in order to make them
-		 * consistent with multiple-element reports.
+		 * consistent with multiple-element reports. Making the fresh versions of LiA and LiD as
+		 * objects doesn't work, mysteriously, and the array-based process equally mysteriously
+		 * creates a blank extra element at the end of the array, which is why we then unset it.
 		 */		
 		if (count($report->ScheduleA->LiA) === 1)
 		{
@@ -221,6 +223,7 @@ class SaberVA
 			$report->ScheduleA->LiA = array();
 			$report->ScheduleA->LiA[] = $tmp;
 			unset($tmp);
+			unset($report->ScheduleA->LiA->{1});
 		}
 		if (count($report->ScheduleA->LiD) === 1)
 		{
@@ -228,6 +231,7 @@ class SaberVA
 			$report->ScheduleA->LiD = array();
 			$report->ScheduleA->LiD[] = $tmp;
 			unset($tmp);
+			unset($report->ScheduleA->LiD->{1});
 		}
 
 		/*
