@@ -237,7 +237,10 @@ class SaberVA
 		/*
 		 * Normalize all address records within this report.
 		 */
-		$report->ReportHeader->Address->Line1 = $this->normalize_address($report->ReportHeader->Address->Line1);
+		if (!empty($report->ReportHeader->Address->Line1))
+		{
+			$report->ReportHeader->Address->Line1 = $this->normalize_address($report->ReportHeader->Address->Line1);
+		}
 		if (!empty($report->ReportHeader->Address->Line2))
 		{
 			$report->ReportHeader->Address->Line2 = $this->normalize_address($report->ReportHeader->Address->Line2);
@@ -246,10 +249,17 @@ class SaberVA
 		{
 			foreach ($report->ScheduleA->LiA as $LiA)
 			{
-				$LiA->Contributor->Address->Line1 = $this->normalize_address($LiA->Contributor->Address->Line1);
+				if (!empty($LiA->Contributor->Address->Line1))
+				{
+					$LiA->Contributor->Address->Line1 = $this->normalize_address($LiA->Contributor->Address->Line1);
+				}
 				if (!empty($LiA->Contributor->Address->Line2))
 				{
 					$LiA->Contributor->Address->Line2 = $this->normalize_address($LiA->Contributor->Address->Line2);
+				}
+				else
+				{
+					unset($LiA->Contributor->Address->Line2);
 				}
 				if (!empty($LiA->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness))
 				{
@@ -261,10 +271,17 @@ class SaberVA
 		{
 			foreach ($report->ScheduleD->LiD as $LiD)
 			{
-				$LiD->Payee->Address->Line1 = $this->normalize_address($LiD->Payee->Address->Line1);
+				if (!empty($LiD->Payee->Address->Line1))
+				{
+					$LiD->Payee->Address->Line1 = $this->normalize_address($LiD->Payee->Address->Line1);
+				}
 				if (!empty($LiD->Payee->Address->Line2))
 				{
 					$LiD->Payee->Address->Line2 = $this->normalize_address($LiD->Payee->Address->Line2);
+				}
+				else
+				{
+					unset($LiD->Payee->Address->Line2);
 				}
 				if (!empty($LiD->Payee->PrimaryCityAndStateOfEmploymentOrBusiness))
 				{
