@@ -411,7 +411,10 @@ foreach ($committees AS $committee)
 					'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
 					'date', 'amount', 'cumulative_amount');
 				fputcsv($fp_committee, $headers);
-				fputcsv($fp_all, $headers);
+				if (filesize('contributions.csv') == 0)
+				{
+					fputcsv($fp_all, $headers);
+				}
 			
 				/*
 				 * Create an array to store this data as JSON, in addition to CSV.
@@ -524,7 +527,6 @@ foreach ($committees AS $committee)
 		fclose($fp_committee);
 		fclose($fp_all);
 
-		
 		/*
 		 * Turn the JSON array into actual JSON.
 		 */
@@ -543,6 +545,10 @@ foreach ($committees AS $committee)
 				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
 				'address_state', 'address_zip', 'date', 'amount', 'authorized_by', 'purchased');
 			fputcsv($fp_committee, $headers);
+			if (filesize('expenses.csv') == 0)
+			{
+				fputcsv($fp_all, $headers);
+			}
 			
 			/*
 			 * Create an array to store this data as JSON, in addition to CSV.
