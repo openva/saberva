@@ -422,6 +422,18 @@ foreach ($committees AS $committee)
 				$record = array
 					(
 						'committee_code' => $committee->CommitteeCode,
+					/*
+					 * Deal with empty strings being stored as objects. Per
+					 * <https://github.com/openva/saberva/issues/21>.
+					 */
+					foreach ($contribution->Contributor as &$field)
+					{
+						if (is_object($field))
+						{
+							$field = '';
+						}
+					}
+
 						'report_id' => $report->Id,
 						'individual' => (string) $contribution->Contributor->{@attributes}->IsIndividual,
 						'prefix' => (string) $contribution->Contributor->Prefix,
@@ -516,6 +528,18 @@ foreach ($committees AS $committee)
 			$i=0;
 			foreach($expenses as $expense)
 			{
+				
+				/*
+				 * Deal with empty objects, which plague this data. (Per issue #21.)
+				 */
+				if (is_object($expense->Payee->Address->Line1))
+				{
+					$expense->Payee->Address->Line1 = '';
+				}
+				if (is_object($expense->Payee->Address->Line2))
+				{
+					$expense->Payee->Address->Line2 = '';
+				}
 				
 				$record = array
 					(
