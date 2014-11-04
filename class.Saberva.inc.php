@@ -214,9 +214,7 @@ class SaberVA
 		
 		/*
 		 * Recess single-element LiA and LiD elements by a single level, in order to make them
-		 * consistent with multiple-element reports. Making the fresh versions of LiA and LiD as
-		 * objects doesn't work, mysteriously, and the array-based process equally mysteriously
-		 * creates a blank extra element at the end of the array, which is why we then unset it.
+		 * consistent with multiple-element reports.
 		 */		
 		if (count($report->ScheduleA->LiA) === 1)
 		{
@@ -244,10 +242,13 @@ class SaberVA
 		{
 			$report->ReportHeader->Address->Line2 = $this->normalize_address($report->ReportHeader->Address->Line2);
 		}
+		
 		if (count($report->ScheduleA->LiA) > 0)
 		{
+		
 			foreach ($report->ScheduleA->LiA as $LiA)
 			{
+				
 				if (!empty($LiA->Contributor->Address->Line1))
 				{
 					$LiA->Contributor->Address->Line1 = $this->normalize_address($LiA->Contributor->Address->Line1);

@@ -299,6 +299,7 @@ if ($options['verbosity'] >= 5)
 {
 	echo number_format(count((array) $committees)) . ' committees' . PHP_EOL;
 }
+
 foreach ($committees AS $committee)
 {
 	
@@ -438,7 +439,14 @@ foreach ($committees AS $committee)
 					 */
 					foreach ($contribution->Contributor as &$field)
 					{
-						if (is_object($field))
+						if (is_object($field) && (count($field) == 0) )
+						{
+							$field = '';
+						}
+					}
+					foreach ($contribution->Contributor->Address as &$field)
+					{
+						if (is_object($field) )
 						{
 							$field = '';
 						}
@@ -463,6 +471,7 @@ foreach ($committees AS $committee)
 						'date' => (string) $contribution->TransactionDate,
 						'amount' => (string) $contribution->Amount,
 						'cumulative_amount' => (string) $contribution->TotalToDate);
+					
 					fputcsv($fp_committee, $record);
 					fputcsv($fp_all, $record);
 					
