@@ -256,7 +256,7 @@ class SaberVA
 				{
 					$LiA->Contributor->Address->Line2 = $this->normalize_address($LiA->Contributor->Address->Line2);
 				}
-				else
+				elseif (isset($LiA->Contributor->Address->Line2))
 				{
 					unset($LiA->Contributor->Address->Line2);
 				}
@@ -278,7 +278,7 @@ class SaberVA
 				{
 					$LiD->Payee->Address->Line2 = $this->normalize_address($LiD->Payee->Address->Line2);
 				}
-				else
+				elseif (isset($LiD->Payee->Address->Line2))
 				{
 					unset($LiD->Payee->Address->Line2);
 				}
