@@ -410,6 +410,7 @@ foreach ($committees AS $committee)
 					'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
 					'date', 'amount', 'cumulative_amount');
 				fputcsv($fp_committee, $headers);
+				fputcsv($fp_all, $headers);
 			
 				/*
 				 * Create an array to store this data as JSON, in addition to CSV.
