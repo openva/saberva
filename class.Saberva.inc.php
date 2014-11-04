@@ -203,9 +203,10 @@ class SaberVA
 		}
 		
 		/*
-		 * Turn the XML into an object.
+		 * Turn the XML into an object. Turn it into a stdClass object, rather than as a
+		 * SimpleXMLElement.
 		 */
-		$report = simplexml_load_string($this->xml);
+		$report = json_decode(json_encode(simplexml_load_string($this->xml)));
 		if ($report === FALSE)
 		{
 			return FALSE;
@@ -219,19 +220,17 @@ class SaberVA
 		 */		
 		if (count($report->ScheduleA->LiA) === 1)
 		{
-			$tmp = $report->ScheduleA->LiA;
+			$tmp = array($report->ScheduleA->LiA);
 			$report->ScheduleA->LiA = array();
 			$report->ScheduleA->LiA[] = $tmp;
 			unset($tmp);
-			unset($report->ScheduleA->LiA->{1});
 		}
 		if (count($report->ScheduleA->LiD) === 1)
 		{
-			$tmp = $report->ScheduleA->LiD;
+			$tmp = array($report->ScheduleA->LiD);
 			$report->ScheduleA->LiD = array();
 			$report->ScheduleA->LiD[] = $tmp;
 			unset($tmp);
-			unset($report->ScheduleA->LiD->{1});
 		}
 
 		/*
