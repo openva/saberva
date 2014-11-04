@@ -95,7 +95,6 @@ if ( isset($argv) && (count($argv) > 1) )
 	}
 	if ( in_array('--help', $argv) || in_array('-h', $argv) )
 	{
-		
 		echo 'Saberva: Parser for campaign finance data from the VA State Board of Elections.' . PHP_EOL . PHP_EOL;
 		echo 'usage: php saberva.php [-rvphac]' . PHP_EOL . PHP_EOL;
 		echo 'Arguments:' . PHP_EOL;
@@ -108,7 +107,6 @@ if ( isset($argv) && (count($argv) > 1) )
 		echo "-r / --reload\t\tRebuild committees.json, regardless of its recency." . PHP_EOL;
 		echo "-v / --verbose\t\tDisplay detailed output." . PHP_EOL;
 		exit();
-		
 	}
 }
 
@@ -320,108 +318,119 @@ foreach ($committees AS $committee)
 			. $filename . PHP_EOL;
 	}
 	
-	foreach ($committee->Reports as $report)
+	if (count($committee->Reports) > 0)
 	{
 		
-		/*
-		 * Define the path of the file that will store this report's JSON.
-		 */
-		$filename = REPORTS_DIR . $report->Id . '.json';
-		
-		/*
-		 * If we already have a copy of this file, don't retrieve it again.
-		 */
-		if (file_exists($filename) === FALSE)
+		foreach ($committee->Reports as $report)
 		{
 		
 			/*
-			 * Save the remote XML to a string.
+			 * Define the path of the file that will store this report's JSON.
 			 */
-			$parser->url = $report->XmlUrl;
-			$xml = $parser->fetch_content();
-			
-			if ($xml === FALSE)
+			$filename = REPORTS_DIR . $report->Id . '.json';
+		
+			/*
+			 * If we already have a copy of this file, don't retrieve it again.
+			 */
+			if (file_exists($filename) === FALSE)
 			{
 			
-				if ($options['verbosity'] >= 3)
+				/*
+				 * Save the remote XML to a string.
+				 */
+				$parser->url = $report->XmlUrl;
+				$xml = $parser->fetch_content();
+			
+				if ($xml === FALSE)
 				{
-					echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
-				}
-				continue;
+			
+					if ($options['verbosity'] >= 3)
+					{
+						echo $committee->CommitteeName . ': Report ' . $report->Id . ' could not be retrieved' . PHP_EOL;
+					}
+					continue;
 				
+				}
+			
+				/*
+				 * Convert this XML to JSON.
+				 */
+				$parser->xml = $xml;
+				$result = $parser->xml_to_json();
+				if ($result === FALSE)
+				{
+			
+					if ($options['verbosity'] >= 3)
+					{
+						echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
+					}
+					continue;
+				
+				}
+				
+				/*
+				 * Save a copy of the JSON to a file.
+				 */
+				file_put_contents($filename, $parser->report_json);
+			
+				/*
+				 * Save this variable to be used later.
+				 */
+				$json = $parser->report_json;
+			
+			}
+		
+			/*
+			 * If we already have a copy of this file, then simply reopen it.
+			 */
+			else
+			{
+				$json = file_get_contents($filename);
 			}
 			
 			/*
-			 * Convert this XML to JSON.
+			 * Save the report's contributions and expenses to their own objects.
 			 */
-			$parser->xml = $xml;
-			$result = $parser->xml_to_json();
-			if ($result === FALSE)
-			{
-			
-				if ($options['verbosity'] >= 3)
-				{
-					echo $committee->CommitteeName . ': Report ' . $report->Id . ' skipped; invalid XML' . PHP_EOL;
-				}
-				continue;
-				
-			}
-				
-			/*
-			 * Save a copy of the JSON to a file.
-			 */
-			file_put_contents($filename, $parser->report_json);
-			
-			/*
-			 * Save this variable to be used later.
-			 */
-			$json = $parser->report_json;
-			
-		}
-		
-		/*
-		 * If we already have a copy of this file, then simply reopen it.
-		 */
-		else
-		{
-			$json = file_get_contents($filename);
-		}
-		
-		/*
-		 * Save the report's contributions and expenses to their own objects.
-		 */
-		$tmp = json_decode($json);
-		$contributions = $tmp->ScheduleA->LiA;
-		$expenses = $tmp->ScheduleD->LiD;
-		unset($tmp);
+			$tmp = json_decode($json);
+			$contributions = $tmp->ScheduleA->LiA;
+			$expenses = $tmp->ScheduleD->LiD;
+			unset($tmp);
 
-		/*
-		 * Iterate through every individual contribution and and save it to a pair of CSV files.
-		 */
-		$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'w');
-		$fp_all = fopen('contributions.csv', 'a');
-		
-		if (count($contributions) > 0)
-		{
-		
-			$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
-				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
-				'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
-				'date', 'amount', 'cumulative_amount');
-			fputcsv($fp_committee, $headers);
-			
 			/*
-			 * Create an array to store this data as JSON, in addition to CSV.
+			 * Iterate through every individual contribution and and save it to a pair of CSV files.
 			 */
-			$json = array();
-			
-			$i=0;
-			foreach ($contributions as $contribution)
+			$fp_committee = fopen('contributions/' . $committee->CommitteeCode . '.csv', 'w');
+			$fp_all = fopen('contributions.csv', 'a');
+		
+			if (count($contributions) > 0)
 			{
 				
-				$record = array
-					(
-						'committee_code' => $committee->CommitteeCode,
+				$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
+					'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
+					'address_state', 'address_zip', 'employer', 'occupation', 'employment_place',
+					'date', 'amount', 'cumulative_amount');
+				fputcsv($fp_committee, $headers);
+			
+				/*
+				 * Create an array to store this data as JSON, in addition to CSV.
+				 */
+				$json = array();
+			
+				$i=0;
+			
+				foreach ($contributions as $contribution)
+				{
+				
+					/*
+					 * If this is a blank record, skip it. This is a temporary shim, to deal with the
+					 * inadvertent creation of blank records. See
+					 * <https://github.com/openva/saberva/issues/19> for more.
+					 */
+					if (!isset($contribution->Amount))
+					{
+						continue;
+					}
+					
 					/*
 					 * Deal with empty strings being stored as objects. Per
 					 * <https://github.com/openva/saberva/issues/21>.
@@ -434,6 +443,8 @@ foreach ($committees AS $committee)
 						}
 					}
 
+					$record = array
+						('committee_code' => $committee->CommitteeCode,
 						'report_id' => $report->Id,
 						'individual' => (string) $contribution->Contributor->{@attributes}->IsIndividual,
 						'prefix' => (string) $contribution->Contributor->Prefix,
@@ -450,57 +461,59 @@ foreach ($committees AS $committee)
 						'employment_place' => (string) $contribution->Contributor->PrimaryCityAndStateOfEmploymentOrBusiness,
 						'date' => (string) $contribution->TransactionDate,
 						'amount' => (string) $contribution->Amount,
-						'cumulative_amount' => (string) $contribution->TotalToDate
-					);
-				fputcsv($fp_committee, $record);
-				fputcsv($fp_all, $record);
-				
-				/*
-				 * Save this individual contribution as a JSON file.
-				 */
-				if ($options['atomize_json'] == TRUE)
-				{
-				
-					if (is_dir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/') === FALSE)
+						'cumulative_amount' => (string) $contribution->TotalToDate);
+					fputcsv($fp_committee, $record);
+					fputcsv($fp_all, $record);
+					
+					/*
+					 * Save this individual contribution as a JSON file.
+					 */
+					if ($options['atomize_json'] == TRUE)
 					{
-						if (mkdir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/', 0777, TRUE) === FALSE)
+				
+						if (is_dir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/') === FALSE)
 						{
-							die('Cannot create contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/');
+							if (mkdir('contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/', 0777, TRUE) === FALSE)
+							{
+								die('Cannot create contributions/' . $committee->CommitteeCode . '/' . $report->Id . '/');
+							}
 						}
-					}
 					
-					/*
-					 * Add some additional fields to help us index this data.
-					 */
-					$contribution->type = 'expense';
-					$contribution->ReportId = $report->Id;
-					$contribution->CommitteeCode = $committee->CommitteeCode;
-					$contribution->CommitteeName = $committee->CommitteeName;
-					if (isset($committee->CandidateName))
-					{
-						$contribution->CandidateName = $committee->CandidateName;
-					}
+						/*
+						 * Add some additional fields to help us index this data.
+						 */
+						$contribution->type = 'contribution';
+						$contribution->ReportId = $report->Id;
+						$contribution->CommitteeCode = $committee->CommitteeCode;
+						$contribution->CommitteeName = $committee->CommitteeName;
+						if (isset($committee->CandidateName))
+						{
+							$contribution->CandidateName = $committee->CandidateName;
+						}
 					
-					/*
-					 * Save the expense as a JSON file.
-					 */
-					file_put_contents('contributions/' . $committee->CommitteeCode . '/' . $report->Id
-						. '/' . str_pad($i, 5, '0', STR_PAD_LEFT) . '.json', json_encode($contribution));
+						/*
+						 * Save the expense as a JSON file.
+						 */
+						file_put_contents('contributions/' . $committee->CommitteeCode . '/' . $report->Id
+							. '/' . str_pad($i, 5, '0', STR_PAD_LEFT) . '.json', json_encode($contribution));
 						
+					}
+				
+					/*
+					 * Append this record to our JSON array.
+					 */
+					$json[] = $record;
+				
+					$i++;
+
 				}
-				
-				/*
-				 * Append this record to our JSON array.
-				 */
-				$json[] = $record;
-				
-				$i++;
 				
 			}
 			
 		}
 		fclose($fp_committee);
 		fclose($fp_all);
+
 		
 		/*
 		 * Turn the JSON array into actual JSON.
@@ -515,6 +528,7 @@ foreach ($committees AS $committee)
 		$fp_all = fopen('expenses.csv', 'a');
 		if (count($expenses) > 0)
 		{
+		
 			$headers = array('committee_code', 'report_id', 'individual', 'prefix', 'name_first',
 				'name_middle', 'name_last', 'address_1', 'address_2', 'address_city',
 				'address_state', 'address_zip', 'date', 'amount', 'authorized_by', 'purchased');
@@ -616,11 +630,10 @@ foreach ($committees AS $committee)
 		 */
 		$json = json_encode($json);
 		file_put_contents('expenses/' . $committee->CommitteeCode . '.json', $json);
-		
+		 
 	}
-	
-}
 
+}
 
 /**
  * Create a CSV file to provide basic data about each committee.
@@ -659,6 +672,7 @@ else
 	$csv = array();
 	foreach ($committees as $committee)
 	{
+	
 		$csv['code'] = $committee->CommitteeCode;
 		$csv['name'] = $committee->CommitteeName;
 		$csv['candidate'] = $committee->CandidateName;
